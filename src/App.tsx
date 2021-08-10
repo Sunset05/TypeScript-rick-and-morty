@@ -1,26 +1,44 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
 import './App.css';
+import CharacterCard from './CharacterCard';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import { ICharacter } from './types';
+
+interface IAppState {
+  name: string;
+  characters: ICharacter[];
+}
+
+class App extends Component<{}, IAppState> {
+
+  constructor(props: {}) {
+    super(props)
+    this.state= {
+      name: 'Stacey',
+      characters: []
+    }
+  }
+
+  componentDidMount() {
+    fetch("https://rickandmortyapi.com/api/character")
+      .then(response => response.json())
+      .then( ({ results }) => this.setState({ characters:  results as ICharacter[] }))
+  }
+
+  showCharacters = () => {
+    return this.state.characters.map(character  => {
+      return < CharacterCard key={character.id} character={character} />
+    })
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <h1>Welcome {this.state.name}</h1>
+        {this.showCharacters()}
+      </div>
+    );
+  }
 }
 
 export default App;
